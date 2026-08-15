@@ -55,6 +55,6 @@ There is alot of unused ones, which are not included with the dropdown list.
 
 ## Installation
 1. Select `Code -> Download ZIP` at the top of this page.
-2. In Blender, go to `Edit -> Preferences -> Add-ons`, select `Install`, and navigate to the downloaded zip file.
+2. In Blender, go to `File -> User Preferences -> Add-ons`, select `Install from File...`, and navigate to the downloaded zip file.
 3. Search for `Indexed Mesh` in the addons list and click the checkbox to enable the addon.
-4. `Save Preferences` in the menu at the bottom left of the window.
+4. `Save User Settings` in the menu at the bottom left of the window.
