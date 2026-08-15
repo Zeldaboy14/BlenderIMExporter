@@ -1,3 +1,4 @@
+<img width="997" height="249" alt="immeshexporter" src="https://github.com/user-attachments/assets/f879bf4e-9f62-4bc6-8762-accbf54034e9" />
 A WIP, modern, pre-2.8 indexed mesh exporter for Trainz and the Auran JET engine.
 
 This exporter is designed to be a replacement for the well-used legacy exporter written by USCHI0815 (Torsten), due to how inefficiant the model's exported can be (blender->xml->TrainzMeshImporter.exe->.im).
