@@ -27,7 +27,7 @@ IOR           | N/A                             | Refraction Texture (unused by 
 
 There were several additional texture slots in the JET spec that are unsupported by Trainz (TEX_Ambient, TEX_Filtercolor, and TEX_Displacement). They are not currently supported by the exporter, nor should be due to versioning differences since Trainz 2009 (see here - https://trainz.shaneturner.co.uk/3rdparty/PM2IM%20Tutorial.pdf ).
 
-On the materials tab, you will find a new interface called "Trainz IM Mesh Exporter", and it will (eventually) contain some handy features for exporting
+On the materials tab, you will find a new interface called "Trainz IM Mesh Exporter", and it will (eventually) contain some handy features for exporting.
 A new feature found in this release is a dropdown selection for Material Types (m.)
 
 *Material Types per Trainz Versions for PM/IM Meshs*
