@@ -12,7 +12,7 @@ An export option is provided to force the usage of wide strings within the expor
 
 Once again, this exporter is a work in progress, so if you find any bugs, make sure to create a GitHub issue or bring it to my attention so I can investigate it.
 
-Each of the material data from the principled BSDF node is mapped to the file according to the table below, with target slot types referenced from the Auran JET specification.
+Each of the material data is mapped to the file according to the table below, with target slot types referenced from the Auran JET specification.
 If a texture slot is denoted as "Unused by Trainz", while some existing Trainz material types that utilize these texture slots have been documented, they broke upon Trainz 2009's release. They are maintained to ensure maximum compatibility with the Auran JET specification. Note however that the unused texture's solid color counterpart is separate from the texture data, and if a Solid Color slot is not marked as N/A and has a value that isn't a texture during export, it WILL be written to the .im material data, which is ALL used by Trainz.
 
 Material Slot | Target .IM Data (Solid Color)   | Target .IM Data (Texture)
