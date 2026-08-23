@@ -20,6 +20,11 @@ class IM_PT_main(bpy.types.Panel):
     bl_region_type = 'WINDOW'
     bl_context = "material"
 
+    @classmethod
+    def poll(self, context):
+        material = context.material
+        return material is not None
+
     def draw(self, context):
         layout = self.layout
         mat = context.material
