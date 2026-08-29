@@ -10,6 +10,8 @@ The exporter currently supports the serialization of vertex and index data of tr
 
 An export option is provided to force the usage of wide strings within the exported .im file. As this type of string data is rarely used within exported .im/.kin files (the only notable example being the PB15 fireman), tools dealing with the .im format often fail to parse (or crash) when encountering wide strings. Although the intended purpose of the wide string data is to allow for an extended character set when naming materials or textures, it can also serve as a means of protection against software that isn't fully conformant with the .im spec. If you want to protect your model against ripping software or attachment edits, this option may be beneficial.
 
+Yet another export option allows one to export is a option to export the old ambient color. In the Trainz Mesh Exporter for blender 2.4, the Diffuse color was written in the ambient slot, where it shouldn't have been. By default, this option is enabled, but if you wish to separate the two, this option can be disabled, and you can write the ambient data to its own slot, as it always should have been.
+
 Once again, this exporter is a work in progress, so if you find any bugs, make sure to create a GitHub issue or bring it to my attention so I can investigate it.
 
 Each of the material data is mapped to the file according to the table below, with target slot types referenced from the Auran JET specification.
