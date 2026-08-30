@@ -32,6 +32,7 @@ There were several additional texture slots in the JET spec that are unsupported
 
 On the materials tab, you will find a new interface called "Trainz Material Settings", and it contains some handy features for exporting.
 <img width="739" height="258" alt="image" src="https://github.com/user-attachments/assets/3c290c19-23b7-44ed-b4a0-88c4738a052c" />
+
 One of the features found in this is a dropdown selection for Material Types (m.).  You can enable it for quick access to setting a material type.
 
 *Material Types per Trainz Versions for PM/IM Meshs*
