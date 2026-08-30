@@ -3,6 +3,7 @@
 A WIP, modern, Blender 2.78b indexed mesh exporter for Trainz and the Auran JET engine.
 
 Forked from this specific commit: https://github.com/rileyzzz/BlenderIMExporter/tree/63844bde0ec677b8f445469a29f3fa03fa6694ae
+
 Additional fork used for some additional changes that are now unused: https://github.com/no1tfm/BlenderIMExporter
 
 This exporter is designed to be a replacement for the well-used legacy exporter written by USCHI0815 (Torsten), due to how inefficiant the model's exported can be (blender->xml->TrainzMeshImporter.exe->.im).
