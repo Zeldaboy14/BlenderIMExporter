@@ -104,6 +104,11 @@ class IM_PT_main(bpy.types.Panel):
         #        )
         
         
+        row = col.row(align=True)
+        row.label(text='IM Properties:')
+        layout = col.row()  
+        col = layout.column()
+        
         layout = col.row()
         
         layout.prop(context.material, 'use_trainz_material_type')
@@ -111,20 +116,19 @@ class IM_PT_main(bpy.types.Panel):
         layout = col.row()
         
         layout.active = context.material.use_trainz_material_type
-            
-        layout.prop(
-            context.material,
-            "trainz_material_type",
-            text="Material Type"
-        )
+        layout.prop(context.material, "trainz_material_type", text="Material Type")
+
+        layout = col.row()
+        
+        row = col.row(align=True)
+        row.label(text='texture.txt Properties:')
+        layout = col.row()
+        col = layout.column()
+        layout.label() # for alignment only
         
         layout = col.row()
         
-        layout.prop(
-            context.material,
-            "trainz_tile_options",
-            text="Tile Options"
-        )
+        layout.prop( context.material, "trainz_tile_options", text="Tile Options" )
         
         layout = col.row()
         
@@ -133,11 +137,7 @@ class IM_PT_main(bpy.types.Panel):
         layout = col.row()
         
         layout.active = context.material.use_trainz_compression
-        layout.prop(
-            context.material,
-            "trainz_compression_options",
-            text="Compression"
-        )
+        layout.prop( context.material, "trainz_compression_options", text="Compression" )
         
         layout = col.row()
 
@@ -146,11 +146,7 @@ class IM_PT_main(bpy.types.Panel):
         layout = col.row()
         
         layout.active = context.material.use_trainz_alphahint
-        layout.prop(
-            context.material,
-            "trainz_alphahint",
-            text="Alphahint"
-        )
+        layout.prop( context.material, "trainz_alphahint", text="Alphahint" )
 
 
 classes = (
