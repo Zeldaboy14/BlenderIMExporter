@@ -67,7 +67,7 @@ def jet_str(f, str):
     f.write(struct.pack("<I", len(encoded_name)))
     f.write(encoded_name)
 
-def texture_file(type, img_path, target_dir, is_npo2, use_alpha=False):
+def texture_file(type, img_path, target_dir, is_npo2, use_alpha):
     basename = os.path.basename(img_path).lower()
     texturepath = target_dir + '\\' + os.path.splitext(basename)[0] + ".texture"
     txtpath = texturepath + ".txt"
@@ -841,6 +841,7 @@ def write_file(self, filepath, objects, scene,
                                 is_npo2 = not power_of_two(image.size[0]) or not power_of_two(image.size[1])
                                 if is_npo2:
                                     self.report({'WARNING'}, 'Texture ' + image.filepath + ' is not a power of two. Consider resizing it.')
+                                use_alpha = image.use_alpha
                                 filepath = io_utils.path_reference(image.filepath, source_dir, dest_dir,
                                                         EXPORT_PATH_MODE, "", copy_set, image.library)
                                 strength = 1.0
@@ -851,7 +852,7 @@ def write_file(self, filepath, objects, scene,
                                 if entry == "metallic_texture":
                                     strength = ts.diffuse_color_factor
                                 if EXPORT_TEXTURETXT:
-                                    texturepath = texture_file(type, filepath, dest_dir, is_npo2)
+                                    texturepath = texture_file(type, filepath, dest_dir, is_npo2, use_alpha)
                                 else:
                                     basename = os.path.basename(filepath).lower()
                                     texturepath = dest_dir + '\\' + os.path.splitext(basename)[0] + ".texture"
