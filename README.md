@@ -30,8 +30,8 @@ IOR           | N/A                             | Refraction Texture (unused by 
 
 There were several additional texture slots in the JET spec that are unsupported by Trainz (TEX_Ambient, TEX_Filtercolor, and TEX_Displacement). They are not currently supported by the exporter, nor should be due to versioning differences since Trainz 2009 (see here - https://trainz.shaneturner.co.uk/3rdparty/PM2IM%20Tutorial.pdf ).
 
-On the materials tab, you will find a new interface called "Trainz IM Mesh Exporter", and it will (eventually) contain some handy features for exporting.
-A new feature found in this release is a dropdown selection for Material Types (m.)
+On the materials tab, you will find a new interface called "Trainz Material Settings", and it contains some handy features for exporting. You can enable it for quick access to setting a material type
+One of the features found in this is a dropdown selection for Material Types (m.)
 
 *Material Types per Trainz Versions for PM/IM Meshs*
 Introduced in Trainz     | Introduced in Ultimate Trainz Collection | Introduced in Trainz 2004 | Introduced in Trainz 2006 / Classics 1 & 2 / 3 | Introduced in Trainz 2009   | Introduced in Trainz 2010/2012 | Introduced in Trainz: A New Era
@@ -54,6 +54,10 @@ None                     | None                                     | None      
 None                     | None                                     | None                      | None                                           | m.groundbase (unused)       | -> carried over                | Removed
 
 There is alot of unused ones, which are not included with the dropdown list.
+
+You can also set whether tiling is on the x axis (s), y axis (t), both (st), or none, via the "Tile Option".
+Another is "Compression". This allows the user to set whether the texture is dxt1, dxt3, or dxt5 compressed in-game.
+Finally, there is the "Alphahint" option, which you can enable to set the alphahint as opaque, semitransparent, or translucent.
 
 ## Installation
 1. Select `Code -> Download ZIP` at the top of this page.
