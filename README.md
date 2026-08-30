@@ -1,5 +1,8 @@
 <img width="997" height="249" alt="immeshexporter" src="https://github.com/user-attachments/assets/f879bf4e-9f62-4bc6-8762-accbf54034e9" />
+
 A WIP, modern, Blender 2.78b indexed mesh exporter for Trainz and the Auran JET engine.
+Forked from this specific commit: https://github.com/rileyzzz/BlenderIMExporter/tree/63844bde0ec677b8f445469a29f3fa03fa6694ae
+Additional fork used for some additional changes that are now unused: https://github.com/no1tfm/BlenderIMExporter
 
 This exporter is designed to be a replacement for the well-used legacy exporter written by USCHI0815 (Torsten), due to how inefficiant the model's exported can be (blender->xml->TrainzMeshImporter.exe->.im).
 Rather than relying on the old and frustratingly slow importer executable the 2.4 exporter used (TrainzMeshImporter.exe, created by N3V Games), this exporter writes to the indexed mesh file directly instead of using XML as a middleman. This results in a much tidier and easily maintained codebase, faster exports for content creators, and fine-tuned control over what versions of the JET/E2 game engines the file will work in and what data the file will contain (tangents, skinning, texture slots, etc).
@@ -58,7 +61,9 @@ None                     | None                                     | None      
 There is alot of unused ones, which are not included with the dropdown list.
 
 You can also set whether tiling is on the x axis (s), y axis (t), both (st), or none, via the "Tile Option".
+
 Another is "Compression". This allows the user to set whether the texture is dxt1, dxt3, or dxt5 compressed in-game.
+
 Finally, there is the "Alphahint" option, which you can enable to set the alphahint as opaque, semitransparent, or translucent.
 
 ## Installation
