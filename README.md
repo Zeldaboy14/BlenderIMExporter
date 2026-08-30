@@ -1,6 +1,7 @@
 <img width="997" height="249" alt="immeshexporter" src="https://github.com/user-attachments/assets/f879bf4e-9f62-4bc6-8762-accbf54034e9" />
 
 A WIP, modern, Blender 2.78b indexed mesh exporter for Trainz and the Auran JET engine.
+
 Forked from this specific commit: https://github.com/rileyzzz/BlenderIMExporter/tree/63844bde0ec677b8f445469a29f3fa03fa6694ae
 Additional fork used for some additional changes that are now unused: https://github.com/no1tfm/BlenderIMExporter
 
