@@ -67,7 +67,7 @@ def jet_str(f, str):
     f.write(struct.pack("<I", len(encoded_name)))
     f.write(encoded_name)
 
-def texture_file(type, img_path, target_dir, is_npo2, use_alpha):
+def texture_file(type, img_path, target_dir, is_npo2, use_alpha, trainz_tile_options, use_compression, trainz_compression_options, use_alphahint, trainz_alphahint):
     basename = os.path.basename(img_path).lower()
     texturepath = target_dir + '\\' + os.path.splitext(basename)[0] + ".texture"
     txtpath = texturepath + ".txt"
@@ -76,7 +76,11 @@ def texture_file(type, img_path, target_dir, is_npo2, use_alpha):
         f.write("Primary=" + basename + "\n")
         if use_alpha:
             f.write("Alpha=" + basename + "\n")
-        f.write("Tile=st" + "\n")
+        if use_compression:
+            f.write("Compression=" + trainz_compression_options + "\n")
+        f.write("Tile=" + trainz_tile_options + "\n")
+        if use_alphahint:
+            f.write("Compression=" + trainz_alphahint + "\n")
         if is_npo2:
             f.write("nonpoweroftwo=1\n")
         if type == 8:
@@ -183,7 +187,7 @@ def write_kin(filepath, bones, armature, EXPORT_GLOBAL_MATRIX):
 
             objbones_flat = []
             for obj in bones_flat:
-                if hasattr(obj, 'type') and obj.type == 'EMPTY' or obj.type == 'LATTICE':
+                if hasattr(obj, 'type') and obj.type == 'EMPTY' or obj.type == 'LATTICE' or obj.type != 'ARMATURE':
                     objbones_flat.append(obj)
 
                 #pose_bone = (b for b in armature.pose.bones if b.bone is bone)
@@ -596,7 +600,10 @@ def write_file(self, filepath, objects, scene,
                     with io.BytesIO() as matl:
                         chunk_ver(matl, 103)
                         #Name
-                        jet_str(matl, mat.name + mat.trainz_material_type) #append a trainz texture type onto this
+                        if mat.use_trainz_material_type:
+                            jet_str(matl, mat.name + mat.trainz_material_type) #append a trainz texture type onto this
+                        else:
+                            jet_str(matl, mat.name) #append a trainz texture type onto this
                             
                         #NumProperties
                         matl.write(struct.pack("<I", 0))
@@ -842,6 +849,11 @@ def write_file(self, filepath, objects, scene,
                                 if is_npo2:
                                     self.report({'WARNING'}, 'Texture ' + image.filepath + ' is not a power of two. Consider resizing it.')
                                 use_alpha = image.use_alpha
+                                trainz_tile_options = mat.trainz_tile_options
+                                use_compression = mat.use_trainz_compression
+                                trainz_compression_options = mat.trainz_compression_options
+                                use_alphahint = mat.use_trainz_alphahint
+                                trainz_alphahint = mat.trainz_alphahint
                                 filepath = io_utils.path_reference(image.filepath, source_dir, dest_dir,
                                                         EXPORT_PATH_MODE, "", copy_set, image.library)
                                 strength = 1.0
@@ -852,7 +864,7 @@ def write_file(self, filepath, objects, scene,
                                 if entry == "metallic_texture":
                                     strength = ts.diffuse_color_factor
                                 if EXPORT_TEXTURETXT:
-                                    texturepath = texture_file(type, filepath, dest_dir, is_npo2, use_alpha)
+                                    texturepath = texture_file(type, filepath, dest_dir, is_npo2, use_alpha, trainz_tile_options, use_compression, trainz_compression_options, use_alphahint, trainz_alphahint)
                                 else:
                                     basename = os.path.basename(filepath).lower()
                                     texturepath = dest_dir + '\\' + os.path.splitext(basename)[0] + ".texture"
