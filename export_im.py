@@ -80,7 +80,7 @@ def texture_file(type, img_path, target_dir, is_npo2, use_alpha, trainz_tile_opt
             f.write("Compression=" + trainz_compression_options + "\n")
         f.write("Tile=" + trainz_tile_options + "\n")
         if use_alphahint:
-            f.write("Alphahint=" + trainz_alphahint + "\n")
+            f.write("AlphaHint=" + trainz_alphahint + "\n")
         if is_npo2:
             f.write("nonpoweroftwo=1\n")
         if type == 8:
