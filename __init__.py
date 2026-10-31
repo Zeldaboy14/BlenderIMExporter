@@ -343,7 +343,6 @@ class IM_PT_export_animation(bpy.types.Panel):
 def menu_func_export(self, context):
     menu_icon = custom_icons_export["main"]["trainz_icon_export"]
     self.layout.operator(ExportIM.bl_idname, icon_value=menu_icon.icon_id, text="Indexed Mesh (.im)")
-    self.layout.operator(ExportPM.bl_idname, icon_value=menu_icon.icon_id, text="Progressive Mesh (.pm)")
 
 classesexport = (
     ExportIM,
