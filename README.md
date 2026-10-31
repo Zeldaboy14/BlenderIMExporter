@@ -73,6 +73,8 @@ Another is "Compression". This allows the user to set whether the texture is dxt
 
 Finally, there is the "Alphahint" option, which you can enable to set the alphahint as opaque, semitransparent, or masked.
 
+Unlike the old Trainz Exporter, Specular Hardness now has compatibility with Gmax/3dsMax did with Glossiness, where it is mapped similar. 1 is equal to shinyness of 0.000, and 101 is equal to shinyness of 1.000 for Gmax, and 100.000 for 3dsmax. This is via a toggle. Blender is the default from the old exporter
+
 Roll over any option to get a detailed description of what it does, per the Trainz 2009 Wiki.
 
 ## Installation

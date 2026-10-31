@@ -43,7 +43,10 @@ if "bpy" in locals():
         importlib.reload(export_im)
 from . import interface
 import bpy
+import bmesh
+import mathutils
 import os
+import traceback
 
 from bpy.props import (
         BoolProperty,
@@ -52,6 +55,7 @@ from bpy.props import (
         EnumProperty,
         )
 from bpy_extras.io_utils import (
+        ImportHelper,
         ExportHelper,
         path_reference_mode,
         axis_conversion,
@@ -73,54 +77,6 @@ class ExportIM(bpy.types.Operator, ExportHelper):
     filter_glob = StringProperty(
             default="*.im",
             options={'HIDDEN'},
-            )
-            
-    #Handle the update to the properties when the dropdown is altered.
-    def trainzVer_update (self, context):
-        #if self.use_trainzVer != '2006':
-        if context.scene.use_trainzVer in ('2009'):
-            #self.export_tangents = True
-            context.export_tangents = True
-            
-        #if self.use_trainzVer == '2006':
-        if context.scene.use_trainzVer in ('UTC', '2006'):
-            #self.export_tangents = False
-            context.export_tangents = False
-            
-        context.region.tag_redraw()
-
-    #Define the lsit of trainz versions
-    #This can be simplified depending on whether TS2009 - TS 19 use the same settings
-    #TRS04/06 appear to not support the tangents option.
-    trainzVersion = [
-        ("UTC",  "Ultimate Trainz Collection",'UTC or newer'),
-        ("2006", "Trainz Railroad Simulator 2004/2006",'TRS04/06 or newer'),
-        ("2009", "Trainz Simulator 2009",'TS09 or newer'),
-    ]
-
-    #Create the drop down to allow for selection of our target trainz version
-    #Default to Trainz 2009 mode
-    #use_trainzVer = EnumProperty(
-    # moved to the material window
-    bpy.types.Scene.use_trainzVer = EnumProperty(
-            items=trainzVersion,
-            name="Trainz Verison",
-            description="Sets the compatibility level of the IM format.",
-            default="2009",
-            update=trainzVer_update,
-            )
-    # specular akin to gmax and 3dsmax on export        
-    gmax_specular_hardness = BoolProperty(
-            name="Gmax/3ds Max Specular Hardness",
-            description="Compatability from the older softwares on specular hardness",
-            default=False,
-            )
-            
-    # legacy exporter stuff        
-    use_old_ambient_color = BoolProperty(
-            name="Set Ambient color from Diffuse color",
-            description="Compatability from the old exporter. Set Ambient color as Diffuse color",
-            default=True,
             )
 
     # context group
@@ -154,10 +110,64 @@ class ExportIM(bpy.types.Operator, ExportHelper):
             description="Export bounding box data",
             default=True,
             )
+            
+    export_vertex_colors = BoolProperty(
+            name="Vertex Colors",
+            description="Export vertex color data (disables tangents)",
+            default=False,
+            )
+            
+    export_neighbor_info = BoolProperty(
+            name="Adjacency Data",
+            description="Export triangle adjacency information. Requires triangulated geometry. This can be slow",
+            default=False,
+            )
 
     use_kin = BoolProperty(
             name="Export Animation",
             description="Write out the kin file",
+            default=True,
+            )
+            
+    use_blender_framerate = BoolProperty(
+            name="Use Blender Frame Rate",
+            description="Use the configured blender framerate instead of the default (30 fps). May cause issues with bogey exports",
+            default=False,
+            )
+    
+    use_skel = BoolProperty(
+            name="Use SKEL Hierarchy",
+            description="Use a SKEL hierarchy instead of INFL to store bone data. Will break skinning, but can reduce file size",
+            default=False,
+            )
+
+    export_anim_scale = BoolProperty(
+            name="Export Scaling Data",
+            description="Export additional scaling data in animations",
+            default=False,
+            )
+
+    use_relative_positioning = BoolProperty(
+            name="Use Relative Positioning",
+            description="Use relative positioning in animation data. (Only supported in TANE+)",
+            default=False,
+            )
+
+    export_all_bones = BoolProperty(
+            name="Export All Bones",
+            description="Exports all bones/animated nodes, regardless of b.r. prefix",
+            default=False,
+            )
+
+    use_nla = BoolProperty(
+            name="NLA Tracks",
+            description="Export each NLA track to its own .kin file",
+            default=False,
+            )
+    
+    export_events = BoolProperty(
+            name="Animation Events",
+            description="Exports timeline markers as animation events. Add the prefix 's.' (removed on export) for sound events, generic events will be created otherwise",
             default=True,
             )
 
@@ -183,7 +193,6 @@ class ExportIM(bpy.types.Operator, ExportHelper):
                                             "filter_glob",
                                             #"use_trainzVer",
                                             "use_old_ambient_color",
-                                            "gmax_specular_hardness",
                                             ))
 
         global_matrix = (Matrix.Scale(self.global_scale, 4))
@@ -232,12 +241,11 @@ class IM_PT_export_include(bpy.types.Panel):
         col.prop(operator, 'use_selection')
 
         layout.separator()
-        layout.prop(operator, 'gmax_specular_hardness')
-        layout.prop(operator, 'use_old_ambient_color')
         layout.prop(operator, 'use_texturetxt')
-        layout.prop(operator, 'export_tangents')
+        #layout.prop(operator, 'export_tangents')
         layout.prop(operator, 'export_bounds')
-        layout.prop(operator, 'use_kin')
+        layout.prop(operator, 'export_neighbor_info')
+        #layout.prop(operator, 'use_kin')
 
 
 class IM_PT_export_geometry(bpy.types.Panel):
@@ -263,58 +271,123 @@ class IM_PT_export_geometry(bpy.types.Panel):
         operator = sfile.active_operator
 
         layout.prop(operator, 'use_mesh_modifiers')
+        
+        layout.prop(operator, 'export_vertex_colors')
+        
+        #layout.prop(operator, 'export_curves')
         layout.prop(operator, 'global_scale')
         layout.prop(operator, 'path_mode')
         #layout.prop(operator, 'use_triangles')
+        
+class IM_PT_export_armature(bpy.types.Panel):
+    bl_space_type = 'FILE_BROWSER'
+    bl_region_type = 'TOOL_PROPS'
+    bl_label = "Armature"
+    bl_parent_id = "FILE_PT_operator"
+
+    @classmethod
+    def poll(cls, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        return operator.bl_idname == "EXPORT_SCENE_OT_im"
+
+    def draw(self, context):
+        layout = self.layout
+        if blender_version > 2080000:
+            layout.use_property_split = True
+            layout.use_property_decorate = False  # No animation.
+
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        layout.prop(operator, 'use_skel')
+        layout.prop(operator, 'export_all_bones')
+        
+class IM_PT_export_animation(bpy.types.Panel):
+    bl_space_type = 'FILE_BROWSER'
+    bl_region_type = 'TOOL_PROPS'
+    bl_label = "Animation"
+    bl_parent_id = "FILE_PT_operator"
+
+    @classmethod
+    def poll(cls, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        return operator.bl_idname == "EXPORT_SCENE_OT_im"
+
+    def draw_header(self, context):
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        self.layout.prop(operator, 'use_kin', text="")
+
+    def draw(self, context):
+        layout = self.layout
+        if blender_version > 2080000:
+            layout.use_property_split = True
+            layout.use_property_decorate = False  # No animation.
+
+        sfile = context.space_data
+        operator = sfile.active_operator
+
+        layout.enabled = operator.use_kin
+        
+        layout.prop(operator, 'export_anim_scale')
+        layout.prop(operator, 'use_relative_positioning')
+        layout.prop(operator, 'use_nla')
+        layout.prop(operator, 'export_events')
+        layout.prop(operator, 'use_blender_framerate')
 
 def menu_func_export(self, context):
-    menu_icon = custom_icons["main"]["trainz_icon"]
+    menu_icon = custom_icons_export["main"]["trainz_icon_export"]
     self.layout.operator(ExportIM.bl_idname, icon_value=menu_icon.icon_id, text="Indexed Mesh (.im)")
+    self.layout.operator(ExportPM.bl_idname, icon_value=menu_icon.icon_id, text="Progressive Mesh (.pm)")
 
-
-classes = (
+classesexport = (
     ExportIM,
     IM_PT_export_include,
     IM_PT_export_geometry,
+    IM_PT_export_animation,
+    IM_PT_export_armature,
 )
 
 # --------------------------------------------------------------------------------
 #  Custom Icons
 # --------------------------------------------------------------------------------
-custom_icons = {}
-
-def registerCustomIcon():
+custom_icons_export = {}
+    
+def registerCustomIconExport():
     import bpy.utils.previews
     pcoll = bpy.utils.previews.new()
     script_path = os.path.dirname(__file__)
     icons_dir = os.path.join(script_path, "icons")
-    pcoll.load("trainz_icon", os.path.join(icons_dir, "trainz_icon.png"), 'IMAGE')
-    custom_icons["main"] = pcoll
+    pcoll.load("trainz_icon_export", os.path.join(icons_dir, "trainz_icon.png"), 'IMAGE')
+    custom_icons_export["main"] = pcoll
 
-
-def unregisterCustomIcon():
-    for pcoll in custom_icons.values():
+def unregisterCustomIconExport():
+    for pcoll in custom_icons_export.values():
         bpy.utils.previews.remove(pcoll)
-    custom_icons.clear()
+    custom_icons_export.clear()
 
 def register():
-    for cls in classes:
+    for cls in classesexport:
         bpy.utils.register_class(cls)
-
+    registerCustomIconExport()
     bpy.types.INFO_MT_file_export.append(menu_func_export)
     interface.register()
     
-    registerCustomIcon()
 
 
 def unregister():
     bpy.types.INFO_MT_file_export.remove(menu_func_export)
-    interface.unregister()
-    
-    for cls in classes:
-        bpy.utils.unregister_class(cls)
+    interface.unregister()   
         
-    unregisterCustomIcon()
+    for cls in classesexport:
+        bpy.utils.unregister_class(cls)
+
+    unregisterCustomIconExport()
 
 if __name__ == "__main__":
     register()
